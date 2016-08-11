@@ -86,18 +86,26 @@ def test_dbscan(filename):
     array.append(y)
     array = np.array(array)
     #print(array)
+    ax = plt.gca()
+    ax.set_facecolor('#F0F0F0')
     def drawplt(eps, min_points,cluster):
         for index, pt in enumerate(cluster):
             if pt == 1:
-                plt.plot(x[index],y[index],'r.')
-            elif pt == 2:
                 plt.plot(x[index],y[index],'b.')
+            elif pt == 2:
+                plt.plot(x[index],y[index],'r.')
             elif pt == 3:
                 plt.plot(x[index],y[index],'g.')
             elif pt == 4:
+                plt.plot(x[index],y[index],'c.')
+            elif pt == 5:
+                plt.plot(x[index],y[index],'m.')
+            elif pt == 6:
                 plt.plot(x[index],y[index],'y.')
-            else:
+            elif pt == 7:
                 plt.plot(x[index],y[index],'k.')
+            else:
+                plt.plot(x[index],y[index],'w.')
         filename = 'eps_'+ str(eps) +'&min_points_'+ str(min_points)+'.png'
         plt.title(filename)
         #plt.show()
@@ -105,8 +113,8 @@ def test_dbscan(filename):
 
 
     #print(ans)
-    eps = 1.65
-    min_points = 10
+    eps = 1.5
+    min_points = 9
 
     drawplt(eps, min_points,dbscan(array, eps, min_points))
     #print(dbscan(m, eps, min_points))
@@ -125,11 +133,13 @@ def test_dbscan(filename):
 
 if __name__ == '__main__':
     start = time.time()
-    filename = 'flame.txt'
+    filename = 'Compound.txt'
     # clustering_test.txt (3.5 3)
     #spiral.txt  (2.5 3)
     #path_test.txt
     #flame.txt (1.64 10)
+    #Aggregation.txt (2.2,2.3   11,12)
+    #Compound.txt (1.5 9)?
     test_dbscan(filename)
     end = time.time()
     total = end - start
