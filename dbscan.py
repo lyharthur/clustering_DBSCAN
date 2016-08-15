@@ -6,13 +6,14 @@ import time
 UNCLASSIFIED = False
 NOISE = None
 
-def dist(p,q):
-    #return math.sqrt(np.power(p-q,2).sum())#Euclidean Distance
-    
+def dist_Manhatan(p,q):
     return np.absolute(p-q).sum() #Manhatan Distance
 
+def dist_Euclidean(p,q):
+    return math.sqrt(np.power(p-q,2).sum())#Euclidean Distance
+
 def eps_neighborhood(p,q,eps):
-	return dist(p,q) < eps
+    return dist_Manhatan(p,q) < eps
 
 def region_query(array, point_id, eps):
     n_points = array.shape[1]
@@ -64,8 +65,9 @@ def dbscan(array, eps, min_points):
                 cluster_id = cluster_id + 1
     return classifications
 
+
+
 def test_dbscan(filename):
-    
     x = []
     y = []
     ans = []
@@ -73,9 +75,7 @@ def test_dbscan(filename):
     with open(filename) as f:
         for line in f :
             line = line.replace('\n','')
-            line = line.split('\t')
-
-            
+            line = line.split('\t')      
             #print(float(line[0]),float(line[1]))
             x.append(float(line[0]))
             y.append(float(line[1]))
@@ -85,38 +85,97 @@ def test_dbscan(filename):
     array.append(x)
     array.append(y)
     array = np.array(array)
-    #print(array)
+
     ax = plt.gca()
     ax.set_facecolor('#F0F0F0')
-    def drawplt(eps, min_points,cluster):
+
+    def drawplt_SSE(eps, min_points,cluster):
+        o = open('output.txt','w')
+        meanX = [0,0,0,0,0,0,0,0,0]
+        meanY = [0,0,0,0,0,0,0,0,0]
+        count = [0,0,0,0,0,0,0,0,0]
+        SSE = [0,0,0,0,0,0,0,0,0]
         for index, pt in enumerate(cluster):
             if pt == 1:
                 plt.plot(x[index],y[index],'b.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             elif pt == 2:
                 plt.plot(x[index],y[index],'r.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             elif pt == 3:
                 plt.plot(x[index],y[index],'g.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             elif pt == 4:
                 plt.plot(x[index],y[index],'c.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             elif pt == 5:
                 plt.plot(x[index],y[index],'m.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             elif pt == 6:
                 plt.plot(x[index],y[index],'y.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             elif pt == 7:
                 plt.plot(x[index],y[index],'k.')
+                meanX[pt] += x[index]
+                meanY[pt] += y[index]
+                count[pt] += 1
             else:
                 plt.plot(x[index],y[index],'w.')
+                meanX[8] += x[index]
+                meanY[8] += y[index]
+                count[8] += 1
+
+            o.write(str(x[index]) + ' ' + str(y[index]) + ' ' + str(pt)+'\n')
+     
         filename = 'eps_'+ str(eps) +'&min_points_'+ str(min_points)+'.png'
         plt.title(filename)
         #plt.show()
-        plt.savefig(filename,dpi=300,format="png") 
+        plt.savefig(filename,dpi=300,format="png")
+        o.close()
+
+        Dist = []
+        for index, pt in enumerate(cluster):
+            if pt !=None:
+                distance2 = math.sqrt((meanX[pt]/count[pt] - x[index])**2 + (meanY[pt]/count[pt] - y[index])**2)**2
+                SSE[pt] += distance2
+            else:
+                distance2 = math.sqrt((meanX[8]/count[8] - x[index])**2 + (meanY[8]/count[8] - y[index])**2)**2
+                SSE[8] += distance2
+                
+        SSE_avg = 0
+        c = 0
+        for index,sse in enumerate(SSE):
+            if sse!=0:
+                print('cluster: '+ str(index) + ' -> SSE : ' + str(sse))
+                SSE_avg +=  sse
+                c += 1
+        print('SSE_avg: ' + str(SSE_avg/c)) #sum of square error
+
+    
+##    def SSE():   
+##        return numpy.sum(Dist**2)
 
 
-    #print(ans)
-    eps = 1.5
-    min_points = 9
-
-    drawplt(eps, min_points,dbscan(array, eps, min_points))
+    eps =50 
+    min_points = 1
+    
+    cluster = dbscan(array, eps, min_points)
+    drawplt_SSE(eps, min_points,cluster)
+    
+    
+    
     #print(dbscan(m, eps, min_points))
 
 
@@ -133,15 +192,18 @@ def test_dbscan(filename):
 
 if __name__ == '__main__':
     start = time.time()
-    filename = 'Compound.txt'
-    # clustering_test.txt (3.5 3)
+    filename = 'clustering_test.txt'
+    #clustering_test.txt (3.5 3)
     #spiral.txt  (2.5 3)
     #path_test.txt
     #flame.txt (1.64 10)
     #Aggregation.txt (2.2,2.3   11,12)
     #Compound.txt (1.5 9)?
+    
     test_dbscan(filename)
+    
     end = time.time()
     total = end - start
+    print('--------------------done--------------------')
     print( "Total Time taken: ", total, "seconds.")
-    print('done')
+    
