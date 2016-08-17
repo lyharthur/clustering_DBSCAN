@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import time
+import sys
 
 UNCLASSIFIED = False
 NOISE = None
@@ -87,7 +88,7 @@ def test_dbscan(filename):
     array = np.array(array)
 
     ax = plt.gca()
-    ax.set_facecolor('#F0F0F0')
+#ax.set_facecolor('#F0F0F0')
 
     def drawplt_SSE(eps, min_points,cluster):
         o = open('output.txt','w')
@@ -168,8 +169,8 @@ def test_dbscan(filename):
 ##        return numpy.sum(Dist**2)
 
 
-    eps =50 
-    min_points = 1
+    eps = float(sys.argv[1])
+    min_points = float(sys.argv[2])
     
     cluster = dbscan(array, eps, min_points)
     drawplt_SSE(eps, min_points,cluster)
@@ -192,7 +193,7 @@ def test_dbscan(filename):
 
 if __name__ == '__main__':
     start = time.time()
-    filename = 'clustering_test.txt'
+    filename = sys.argv[3]
     #clustering_test.txt (3.5 3)
     #spiral.txt  (2.5 3)
     #path_test.txt
